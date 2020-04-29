@@ -225,8 +225,11 @@ footer:hover{
     text-decoration: none;
     align-items: center;
     color: white;
+    filter: blur(1px);
+    font-family: 'Courier New', Courier, monospace;
 }
 #afooter:hover{
+    filter: blur(0px);
     transition: 0.7s;
     padding-left: 20px;
     text-decoration: none;
@@ -291,4 +294,5 @@ footer:hover{
 #footertitle{
     color: white;
     padding-top: 50px;
+    font-family: 'Courier New', Courier, monospace;
 }
