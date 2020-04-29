@@ -260,6 +260,7 @@ footer:hover{
 }
 
 #download1{
+    filter: blur(0.5px);
     font-size: 10px;
     transition: .7s;
     margin-top: 30px;
@@ -273,8 +274,10 @@ footer:hover{
     border-radius: 15px;
     background-color: transparent;
     color: white;
+    
 }
 #download1:hover{
+    filter: blur(0px);
     cursor: pointer;
     font-size: 15px;
     transition: .7s;
