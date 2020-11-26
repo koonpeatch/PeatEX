@@ -1,5 +1,7 @@
+--- Thanks For Use EZESZEZ
 
-local madeBy = "Unknown"
+
+local madeBy = "BKHAXHUBBROEZ//"
 
 local Section2 = Instance.new("ScreenGui")
 local main = Instance.new("Frame")
