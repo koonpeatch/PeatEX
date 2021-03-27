@@ -1,2 +1,1 @@
-local enb_state = true
-print(enb_state)
+true
