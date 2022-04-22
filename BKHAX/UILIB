@@ -1764,4 +1764,5 @@ function Library:NewWindow(name)
 
 		return LibraryElements
 	end
+	return Library
 end
