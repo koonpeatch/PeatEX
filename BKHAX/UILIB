@@ -1,6 +1,4 @@
-
-
-   local UserInputService = game:GetService("UserInputService")
+local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 
@@ -21,12 +19,12 @@ local FolderKeep = Instance.new("Folder")
 
 
 for i,v in pairs(game:GetService("CoreGui"):GetDescendants()) do
-	if v.Name == "KBHAXGUI" then
+	if v.Name == "BKHAXGUI" then
 		v:Destroy()
 	end
 end
 
-CoastifiedLibrary.Name = "KBHAXGUI"
+CoastifiedLibrary.Name = "BKHAXGUI"
 CoastifiedLibrary.Parent = game:GetService("CoreGui")
 
 Container.Name = "Container"
@@ -397,6 +395,7 @@ function Library:NewWindow(name)
 		local LibraryElements = {}
 
 		function LibraryElements:CreateToggle(name, action)
+			local toggleClasses = {}
 			local ToggleHolder = Instance.new("Frame")
 			local ToggleTitle = Instance.new("TextLabel")
 			local ToggleBackground = Instance.new("ImageLabel")
@@ -443,6 +442,19 @@ function Library:NewWindow(name)
 			ToggleButton.Image = "rbxassetid://3570695787"
 			ToggleButton.ImageColor3 = Color3.new(1, 0.341176, 0.341176)
 			ToggleButton.ImageTransparency = 1
+
+			function toggleClasses:SetState(boolen)
+				if boolen then
+					Toggled = true
+					TweenService:Create(ToggleButton, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
+				else
+					Toggled = false
+					TweenService:Create(ToggleButton, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
+				end
+				spawn(function()action(Toggled)end)
+			end
+
+
 
 			ToggleButton.MouseButton1Down:Connect(function()    
 				Toggled = not Toggled
@@ -495,9 +507,12 @@ function Library:NewWindow(name)
 				SectionToggle.Visible = true
 				TweenService:Create(SectionToggle, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 			end)
+
+			return toggleClasses
 		end
 
 		function LibraryElements:CreateSlider(name, minimumvalue, maximumvalue, startvalue, precisevalue, action)
+            local sliderclasses = {}
 			local SliderHolder = Instance.new("Frame")
 			local SliderTitle = Instance.new("TextLabel")
 			local SliderValueHolder = Instance.new("ImageLabel")
@@ -576,6 +591,20 @@ function Library:NewWindow(name)
 			Slider.SliceCenter = Rect.new(100, 100, 100, 100)
 			Slider.SliceScale = 0.02
 
+            function sliderclasses:SetState(Value)
+                print(Value,maximumvalue,minimumvalue)
+                if Value > maximumvalue then
+                    Value = maximumvalue
+                elseif Value < minimumvalue then
+                    Value = minimumvalue
+                end
+                SliderValue.Text = Value
+                Slider.Size = UDim2.new((Value - minimumvalue) / (maximumvalue - minimumvalue), 0, 0, 5)
+                spawn(function()
+                    action(Value)
+                end)
+            end
+
 			local function Sliding(input)
 				local Pos = UDim2.new(math.clamp((input.Position.X - SliderBackground.AbsolutePosition.X) / SliderBackground.AbsoluteSize.X, 0, 1), 0, 1.15, 0)
 				TweenService:Create(Slider, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = Pos}):Play()
@@ -653,6 +682,7 @@ function Library:NewWindow(name)
 				SectionToggle.Visible = true
 				TweenService:Create(SectionToggle, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 			end)
+            return sliderclasses
 		end
 
 		function LibraryElements:CreateColorPicker(name, presetcolor, action)
@@ -1231,6 +1261,7 @@ function Library:NewWindow(name)
 		end
 
 		function LibraryElements:CreateTextbox(name, action)
+            local table = {}
 			local TextBoxHolder = Instance.new("Frame")
 			local TextBox = Instance.new("TextBox")
 			local TextBoxRound = Instance.new("ImageLabel")
@@ -1272,6 +1303,11 @@ function Library:NewWindow(name)
 			TextBoxRound.ScaleType = Enum.ScaleType.Slice
 			TextBoxRound.SliceCenter = Rect.new(100, 100, 100, 100)
 			TextBoxRound.SliceScale = 0.04
+
+            function table:SetState(texts)
+                TextBox.Text = texts
+                action(texts)
+            end
 
 			TextBox.FocusLost:Connect(function(enterPressed)
 				if enterPressed then
@@ -1318,6 +1354,7 @@ function Library:NewWindow(name)
 				SectionToggle.Visible = true
 				TweenService:Create(SectionToggle, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 			end)
+            return table
 		end
 
 
@@ -1408,6 +1445,9 @@ function Library:NewWindow(name)
 			local DropdownMain = Instance.new("ImageLabel")
 			local ScrollingFrame = Instance.new("ScrollingFrame")
 			local ButtonLayout = Instance.new("UIListLayout")
+			local SearchFrame = Instance.new("ImageLabel")
+			local SearchTextBox = Instance.new("TextBox")
+			
 
 			local dropdown_function = {}
 
@@ -1418,7 +1458,7 @@ function Library:NewWindow(name)
 
 			local SelectedOptionName = name
 			local NumberOfOptions = 0
-			local DropdownYSize = 0
+			local DropdownYSize = 30
 			local IsDropdownWindowOpen = false
 
 			DropdownHolder.Name = (DropdownName .. "DropdownHolder")
@@ -1444,7 +1484,7 @@ function Library:NewWindow(name)
 			DropdownRound.Parent = DropdownTitle
 			DropdownRound.Active = true
 			DropdownRound.AnchorPoint = Vector2.new(0.5, 0.5)
-			DropdownRound.BackgroundColor3 = Color3.new(1, 1, 1)
+			DropdownRound.BackgroundColor3 = Color3.new(1, 1, 3)
 			DropdownRound.BackgroundTransparency = 1
 			DropdownRound.BorderSizePixel = 0
 			DropdownRound.ClipsDescendants = true
@@ -1473,7 +1513,7 @@ function Library:NewWindow(name)
 			DropdownMain.Parent = DropdownTitle
 			DropdownMain.BackgroundColor3 = Color3.new(0.137255, 0.137255, 0.137255)
 			DropdownMain.BackgroundTransparency = 1
-			DropdownMain.ClipsDescendants = true
+			DropdownMain.ClipsDescendants = true -- default value = true
 			DropdownMain.Position = UDim2.new(1.09275186, 0, -0.0336658955, 0)
 			DropdownMain.Size = UDim2.new(0, 0, 0, DropdownYSize)
 			DropdownMain.Image = "rbxassetid://3570695787"
@@ -1482,22 +1522,63 @@ function Library:NewWindow(name)
 			DropdownMain.SliceCenter = Rect.new(100, 100, 100, 100)
 			DropdownMain.SliceScale = 0.04
 
+			SearchFrame.Parent = DropdownMain
+			SearchFrame.Name = "SearchFrame"
+			SearchFrame.Size = UDim2.new(0.8,0,0,25)
+			SearchFrame.AnchorPoint = Vector2.new(0.5,0)
+			SearchFrame.BackgroundColor3 = Color3.fromRGB(70,70,70)
+			SearchFrame.BackgroundTransparency = 1
+			SearchFrame.Position = UDim2.new(0.5,0,0,2)
+			SearchFrame.Image = "rbxassetid://3570695787"
+			SearchFrame.ImageColor3 = Color3.fromRGB(50,50,50)
+			SearchFrame.ScaleType = Enum.ScaleType.Slice
+			SearchFrame.SliceCenter = Rect.new(100, 100, 100, 100)
+			SearchFrame.SliceScale = 0.04
+			SearchFrame.ClipsDescendants = true
+
+			SearchTextBox.Parent = SearchFrame
+			SearchTextBox.Size = UDim2.new(1,0,1,0)
+			SearchTextBox.BackgroundTransparency = 1
+			SearchTextBox.PlaceholderColor3 = Color3.fromRGB(200,200,200)
+			SearchTextBox.PlaceholderText = "    Search ..."
+			SearchTextBox.TextColor3 = Color3.fromRGB(255,255,255)
+			SearchTextBox.Font = Enum.Font.SourceSansBold
+			SearchTextBox.TextSize = 15
+			SearchTextBox.Text = ""
+
+
+
 			ScrollingFrame.Parent = DropdownMain
 			ScrollingFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 			ScrollingFrame.BackgroundTransparency = 1
 			ScrollingFrame.BorderSizePixel = 0
-			ScrollingFrame.Size = UDim2.new(0, 153, 0, DropdownYSize)
+			ScrollingFrame.Position = UDim2.new(0,0,0,DropdownYSize)
+			ScrollingFrame.Size = UDim2.new(0, 153, 0, DropdownYSize-30)
 			ScrollingFrame.BottomImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 			ScrollingFrame.CanvasSize = UDim2.new(0, 0, StartingCanvasSize, 0)
 			ScrollingFrame.ScrollBarThickness = 3
 			ScrollingFrame.TopImage = "rbxasset://textures/ui/Scroll/scroll-middle.png"
 			ScrollingFrame.ScrollingDirection = "Y"
 
+
 			ButtonLayout.Name = "ButtonLayout"
 			ButtonLayout.Parent = ScrollingFrame
 			ButtonLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 
+			function dropdown_function:SetState(Value)
+				local isRun,Value = pcall(function()
+					if type(Value) == "nil" or type(Value) == "boolean" then
+						return name
+					else
+						return Value
+					end
+				end)
+				SelectedOptionName = Value
+				DropdownTitle.Text = SelectedOptionName
+
+				action(Value)
+			end
 
 			function dropdown_function:Clear()
 				for i,v in pairs(ScrollingFrame:GetChildren()) do
@@ -1508,7 +1589,7 @@ function Library:NewWindow(name)
 				end
 				NumberOfOptions = 0
 				NumberOfOptions = 0
-				DropdownYSize = 0
+				DropdownYSize = 30
 				StartingCanvasSize = 1
 			end
 
@@ -1520,8 +1601,9 @@ function Library:NewWindow(name)
 					end
 				end
 				NumberOfOptions = 0
-				DropdownYSize = 0
+				DropdownYSize = 30
 				StartingCanvasSize = 1
+				Reoptions = options
 
 				for i, v in pairs(Reoptions) do
 					local DropdownOption = Instance.new("TextButton")
@@ -1712,6 +1794,43 @@ function Library:NewWindow(name)
 				end
 			end)
 
+			SearchTextBox.Changed:Connect(function()
+				NumberOfOptions = 0
+
+				for i, v in pairs(ScrollingFrame:GetChildren()) do
+					if v:IsA("TextButton") then
+						if SearchTextBox.Text ~= "" then
+							if string.match(string.lower(v.Text),string.lower(SearchTextBox.Text)) then
+								v.Visible = true
+								NumberOfOptions = NumberOfOptions + 1
+							else
+								v.Visible = false
+							end
+						else
+							v.Visible = true
+							NumberOfOptions = NumberOfOptions + 1
+						end
+					end
+				end
+				if IsDropdownWindowOpen then
+					if NumberOfOptions > 4 then
+						DropdownMain.Size = UDim2.new(0, 153, 0, (30)+(25*4))
+						ScrollingFrame.CanvasSize = UDim2.new(0,0,(1)+(0.25*NumberOfOptions),0)
+					elseif NumberOfOptions <= 4 then
+						DropdownMain.Size = UDim2.new(0, 153, 0, (30+25*NumberOfOptions))
+						ScrollingFrame.CanvasSize = UDim2.new(0,0,(1),0)
+					end
+				else
+					if NumberOfOptions > 4 then
+						DropdownMain.Size = UDim2.new(0, 0, 0, (30)+(25*4))
+						ScrollingFrame.CanvasSize = UDim2.new(0,0,(1)+(0.25*NumberOfOptions),0)
+					elseif NumberOfOptions <= 4 then
+						DropdownMain.Size = UDim2.new(0, 0, 0, (30+25*NumberOfOptions))
+						ScrollingFrame.CanvasSize = UDim2.new(0,0,(1),0)
+					end
+				end
+			end)
+
 			WindowToggle.MouseButton1Down:Connect(function()
 				IsDropdownWindowOpen = false
 
@@ -1764,5 +1883,7 @@ function Library:NewWindow(name)
 
 		return LibraryElements
 	end
-	return Library
+
+	return Sections
 end
+return Library
