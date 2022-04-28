@@ -1261,7 +1261,7 @@ function Library:NewWindow(name)
 		end
 
 		function LibraryElements:CreateTextbox(name, action)
-            local table = {}
+            local textbotable = {}
 			local TextBoxHolder = Instance.new("Frame")
 			local TextBox = Instance.new("TextBox")
 			local TextBoxRound = Instance.new("ImageLabel")
@@ -1304,9 +1304,9 @@ function Library:NewWindow(name)
 			TextBoxRound.SliceCenter = Rect.new(100, 100, 100, 100)
 			TextBoxRound.SliceScale = 0.04
 
-            function table:SetState(texts)
+            function textbotable:SetState(texts)
                 TextBox.Text = texts
-                action(texts)
+                action(texts or TextBox.Text)
             end
 
 			TextBox.FocusLost:Connect(function(enterPressed)
@@ -1354,7 +1354,7 @@ function Library:NewWindow(name)
 				SectionToggle.Visible = true
 				TweenService:Create(SectionToggle, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 			end)
-            return table
+            return textbotable
 		end
 
 
